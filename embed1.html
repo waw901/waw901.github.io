@@ -3,75 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pemutar Live Streaming Bola</title>
-    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <title>Pemutar Video M3U8 Fullscreen</title>
     <style>
         body {
-            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #f0f2f5;
-            margin: 0;
+            font-family: sans-serif;
         }
-        .video-container {
-            max-width: 90%;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+        #video-container {
+            width: 80%; /* Lebar kontainer video */
+            max-width: 900px; /* Lebar maksimum kontainer video */
+            background-color: #000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative; /* Diperlukan untuk tombol fullscreen */
         }
-        .video-js {
-            width: 100% !important; /* Membuat player responsif */
-            height: auto !important; /* Membuat player responsif */
+
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Gaya untuk mode fullscreen */
+        video:-webkit-full-screen {
+            width: 100%;
+            height: 100%;
+        }
+
+        video:-moz-full-screen {
+            width: 100%;
+            height: 100%;
+        }
+
+        video:-ms-fullscreen {
+            width: 100%;
+            height: 100%;
+        }
+
+        video:fullscreen {
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
 <body>
-    <div class="video-container">
-        <h2>Live Streaming Bola</h2>
-        <video
-            id="bola-stream"
-            class="video-js vjs-default-skin"
-            controls
-            preload="auto"
-            autoplay
-            data-setup='{}'>
-            </video>
+
+    <div id="video-container">
+        <video id="videoPlayer" controls></video>
     </div>
 
-    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/videojs-flvjs@1.0.1/dist/videojs-flvjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <script>
-        // Inisialisasi Video.js
-        var player = videojs('bola-stream');
+        document.addEventListener('DOMContentLoaded', function() {
+            var video = document.getElementById('videoPlayer');
+            // Ganti dengan URL M3U8 Anda
+            var videoSrc = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'; // Contoh URL M3U8
 
-        // URL stream FLV Anda
-        // GANTI DENGAN URL STREAMING BOLA ANDA YANG SEBENARNYA!
-        var flvStreamUrl = 'https://liveplay.camel4.live/live/sd-6MuTcduFYSg7zo56Bh.flv?txSecret=5689ad1563d13f328b552be04f26119d&txTime=686B33EA&lat=9000';
+            if (Hls.isSupported()) {
+                var hls = new Hls();
+                hls.loadSource(videoSrc);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play();
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Untuk browser yang mendukung M3U8 secara native (misalnya Safari di iOS/macOS)
+                video.src = videoSrc;
+                video.addEventListener('loadedmetadata', function() {
+                    video.play();
+                });
+            } else {
+                console.error('Browser Anda tidak mendukung HLS secara native atau melalui hls.js.');
+                alert('Maaf, browser Anda tidak dapat memutar video ini.');
+            }
 
-        // Mengatur sumber video untuk pemutar
-        player.src({
-            src: flvStreamUrl,
-            type: 'video/x-flv' // Penting: Tipe MIME untuk FLV
-        });
+            // Menangani mode fullscreen ketika tombol fullscreen di kontrol video diklik
+            video.addEventListener('webkitfullscreenchange', exitHandler, false);
+            video.addEventListener('mozfullscreenchange', exitHandler, false);
+            video.addEventListener('fullscreenchange', exitHandler, false);
+            video.addEventListener('MSFullscreenChange', exitHandler, false);
 
-        // Opsional: Otomatis memutar saat siap (hanya bekerja di beberapa browser/kondisi)
-        player.ready(function() {
-            this.play();
-        });
-
-        // Penanganan error (opsional tapi direkomendasikan)
-        player.on('error', function() {
-            var error = player.error();
-            if (error) {
-                console.error("Video.js Error Code:", error.code);
-                console.error("Video.js Error Message:", error.message);
-                alert("Maaf, terjadi kesalahan saat memutar video. Stream mungkin sedang tidak aktif atau ada masalah koneksi.");
+            function exitHandler() {
+                if (!document.fullscreenElement && !document.webkitIsFullScreen && !document.mozFullScreen && !document.msFullscreenElement) {
+                    console.log('Keluar dari mode fullscreen');
+                    // Tambahkan logika tambahan jika diperlukan saat keluar fullscreen
+                } else {
+                    console.log('Masuk mode fullscreen');
+                    // Tambahkan logika tambahan jika diperlukan saat masuk fullscreen
+                }
             }
         });
     </script>
+
 </body>
 </html>
