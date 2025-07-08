@@ -33,7 +33,7 @@
 </head>
 <body>
     <div class="video-container">
-        <video id="videoPlayer" controls>
+        <video id="videoPlayer" controls autoplay muted>
             Browser Anda tidak mendukung video HTML5.
         </video>
     </div>
@@ -51,6 +51,9 @@
             if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 // Safari native HLS support
                 video.src = url;
+                video.addEventListener('loadedmetadata', () => {
+                    video.play().catch(e => console.log('Autoplay blocked:', e));
+                });
             } else if (Hls.isSupported()) {
                 // HLS.js untuk browser lain
                 hls = new Hls();
@@ -59,6 +62,7 @@
                 
                 hls.on(Hls.Events.MANIFEST_PARSED, function() {
                     console.log('M3U8 loaded successfully');
+                    video.play().catch(e => console.log('Autoplay blocked:', e));
                 });
                 
                 hls.on(Hls.Events.ERROR, function(event, data) {
