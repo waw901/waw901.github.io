@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS Video Player</title>
+    
+    <!-- Video.js CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.10.0/video-js.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .video-container {
+            width: 100%;
+            max-width: 1200px;
+            position: relative;
+        }
+        
+        .video-js {
+            width: 100%;
+            height: auto;
+            min-height: 400px;
+        }
+        
+        @media (max-width: 768px) {
+            .video-js {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video-js
+            id="hlsPlayer"
+            class="video-js vjs-default-skin"
+            controls
+            preload="auto"
+            data-setup="{}">
+            <p class="vjs-no-js">
+                Untuk menonton video ini, silakan 
+                <a href="https://videojs.com/html5-video-support/" target="_blank">
+                    aktifkan JavaScript
+                </a>.
+            </p>
+        </video-js>
+    </div>
+
+    <!-- Video.js JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.10.0/video.min.js"></script>
+    
+    <!-- Video.js HLS Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-hls/5.15.0/videojs-contrib-hls.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const player = videojs('hlsPlayer', {
+                fluid: true,
+                responsive: true,
+                controls: true,
+                preload: 'auto',
+                techOrder: ['html5'],
+                html5: {
+                    hls: {
+                        enableLowInitialPlaylist: true,
+                        smoothQualityChange: true,
+                        overrideNative: true
+                    }
+                }
+            });
+            
+            // Load video source
+            player.src({
+                src: 'https://357bo.sxlingchuangkeji.com/live/60_1752146637.m3u8',
+                type: 'application/x-mpegURL'
+            });
+            
+            player.load();
+            
+            // Auto play (might be blocked by browser policy)
+            player.ready(function() {
+                player.play().catch(function(error) {
+                    console.log('Autoplay prevented:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
