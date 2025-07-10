@@ -1,29 +1,53 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Player Sederhana</title>
-    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <title>Simple Live Stream Player</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Hide scrollbars */
+            background-color: black; /* Black background for the player */
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            display: block; /* Remove extra space below video */
+            object-fit: contain; /* Ensure the video fits within the screen without cropping */
+        }
+    </style>
 </head>
 <body>
-    <video
-        id="my-video"
-        class="video-js vjs-default-skin"
-        controls
-        preload="auto"
-        width="640"
-        height="360"
-        poster="URL_GAMBAR_POSTER_ANDA.jpg"
-        data-setup="{}"
-    >
-        <source src="https://hls.uouetrq19.com/live/sd-6MuSsYeZdSzinciVXD.m3u8?txSecret=c0ae7bb99ac86de511fede0ec59dfaba&txTime=68710166" type="application/x-mpegURL" />
-        <p class="vjs-no-js">
-            Untuk melihat video ini, harap aktifkan JavaScript, dan pertimbangkan untuk memutakhirkan ke browser web yang
-            mendukung video HTML5.
-        </p>
-    </video>
+    <video id="videoPlayer" controls autoplay playsinline></video>
 
-    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <script>
+        const videoPlayer = document.getElementById('videoPlayer');
+        const streamUrl = 'https://hls.uouetrq19.com/live/sd-6MuSsYeZdSzinciVXD.m3u8?txSecret=c0ae7bb99ac86de511fede0ec59dfaba&txTime=68710166';
+
+        // Set the source of the video player
+        videoPlayer.src = streamUrl;
+
+        // Optional: Attempt to go full screen automatically
+        // This might not work without user interaction due to browser security policies
+        // videoPlayer.addEventListener('loadedmetadata', () => {
+        //     if (videoPlayer.requestFullscreen) {
+        //         videoPlayer.requestFullscreen();
+        //     } else if (videoPlayer.webkitRequestFullscreen) { /* Safari */
+        //         videoPlayer.webkitRequestFullscreen();
+        //     } else if (videoPlayer.msRequestFullscreen) { /* IE11 */
+        //         videoPlayer.msRequestFullscreen();
+        //     }
+        // });
+
+        // Handle potential errors
+        videoPlayer.addEventListener('error', (event) => {
+            console.error('Video playback error:', event);
+            alert('Failed to load video stream. Please check the link or try again later.');
+        });
+    </script>
 </body>
 </html>
