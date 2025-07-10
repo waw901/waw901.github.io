@@ -3,50 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Live Stream Player</title>
+    <title>Video.js Live Stream Player</title>
+
+    <link href="https://vjs.zencdn.net/8.12.0/video-js.css" rel="stylesheet" />
+
     <style>
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden; /* Hide scrollbars */
-            background-color: black; /* Black background for the player */
+            overflow: hidden; /* Sembunyikan scrollbar */
+            background-color: black; /* Latar belakang hitam */
         }
-        video {
-            width: 100%;
-            height: 100%;
-            display: block; /* Remove extra space below video */
-            object-fit: contain; /* Ensure the video fits within the screen without cropping */
+        /* Style untuk membuat Video.js player full screen (sesuai container) */
+        .video-js {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        /* Optional: Mengatur object-fit untuk video di dalam player */
+        .video-js .vjs-tech {
+            object-fit: contain; /* Memastikan video pas di layar tanpa terpotong */
         }
     </style>
 </head>
 <body>
-    <video id="videoPlayer" controls autoplay playsinline></video>
+    <video
+        id="my-video"
+        class="video-js vjs-default-skin"
+        controls
+        preload="auto"
+        autoplay
+        playsinline
+        data-setup='{}'>
+        <source src="https://hls.uouetrq19.com/live/sd-6MuSsYeZdSzinciVXD.m3u8?txSecret=c0ae7bb99ac86de511fede0ec59dfaba&txTime=68710166" type="application/x-mpegURL">
+        <p class="vjs-no-js">
+            To view this video please enable JavaScript, and consider upgrading to a
+            web browser that
+            <a href="https://videojs.com/html5-video-support/" target="_blank">
+                supports HTML5 video
+            </a>
+        </p>
+    </video>
 
+    <script src="https://vjs.zencdn.net/8.12.0/video.min.js"></script>
     <script>
-        const videoPlayer = document.getElementById('videoPlayer');
-        const streamUrl = 'https://hls.uouetrq19.com/live/sd-6MuSsYeZdSzinciVXD.m3u8?txSecret=c0ae7bb99ac86de511fede0ec59dfaba&txTime=68710166';
+        // Inisialisasi Video.js
+        const player = videojs('my-video');
 
-        // Set the source of the video player
-        videoPlayer.src = streamUrl;
+        // Opsional: Handle error jika stream tidak bisa dimuat
+        player.on('error', function() {
+            const error = player.error();
+            if (error) {
+                console.error("Video.js Error:", error.code, error.message);
+                alert("Gagal memuat stream video. Kode: " + error.code + " Pesan: " + error.message);
+            } else {
+                alert("Gagal memuat stream video. Terjadi kesalahan yang tidak diketahui.");
+            }
+        });
 
-        // Optional: Attempt to go full screen automatically
-        // This might not work without user interaction due to browser security policies
-        // videoPlayer.addEventListener('loadedmetadata', () => {
-        //     if (videoPlayer.requestFullscreen) {
-        //         videoPlayer.requestFullscreen();
-        //     } else if (videoPlayer.webkitRequestFullscreen) { /* Safari */
-        //         videoPlayer.webkitRequestFullscreen();
-        //     } else if (videoPlayer.msRequestFullscreen) { /* IE11 */
-        //         videoPlayer.msRequestFullscreen();
-        //     }
-        // });
-
-        // Handle potential errors
-        videoPlayer.addEventListener('error', (event) => {
-            console.error('Video playback error:', event);
-            alert('Failed to load video stream. Please check the link or try again later.');
+        // Opsional: Otomatis memutar saat siap (biasanya sudah dihandle oleh autoplay)
+        player.on('ready', function() {
+            console.log('Video.js player is ready!');
+            // Jika autoplay diblokir browser, Anda bisa mencoba play() di sini,
+            // namun kemungkinan tetap butuh interaksi pengguna.
+            // player.play();
         });
     </script>
 </body>
