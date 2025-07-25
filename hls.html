@@ -3,40 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player Streaming HLS dengan HLS.js</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <title>Video Player</title>
+    <!-- CSS Video.js dari CDN -->
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <style>
-        body { margin: 0; padding: 20px; background: #f0f0f0; font-family: Arial, sans-serif; }
-        video { width: 100%; max-width: 800px; height: auto; border: 1px solid #ccc; border-radius: 8px; }
+        body { margin: 0; padding: 0; background: #000; } /* Biar full dan gelap seperti player dedicated */
+        .video-js { width: 100vw; height: 100vh; } /* Full screen otomatis */
     </style>
 </head>
 <body>
-    <h1>Player Streaming HLS Sederhana dengan HLS.js</h1>
-    <p>Player ini menggunakan HLS.js untuk kompatibilitas lebih baik di berbagai browser.</p>
+    <!-- Video tag dengan class video-js -->
+    <video
+        id="my-video"
+        class="video-js vjs-default-skin"
+        controls
+        preload="auto"
+        autoplay
+        muted
+        data-setup="{}">
+        <source src="https://hls.uouetrq19.com/live/sd-6MuQ915rH5WX8KtiTZ.m3u8?txSecret=563b2cea73e664234a75e1d9741224f6&txTime=6884CEE2" type="application/x-mpegURL">
+    </video>
     
-    <video id="video" controls></video>
+    <!-- Script Video.js dari CDN -->
+    <script src="https://vjs.zencdn.net/8.10.0/video.js"></script>
     
     <script>
-        var video = document.getElementById('video');
-        var videoSrc = 'https://hls.uouetrq19.com/live/sd-6MuQ915rH5WX8KtiTZ.m3u8?txSecret=563b2cea73e664234a75e1d9741224f6&txTime=6884CEE2';
+        // Inisialisasi player minimal
+        var player = videojs('my-video');
         
-        if (Hls.isSupported()) {
-            var hls = new Hls();
-            hls.loadSource(videoSrc);
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                video.play();
-            });
-        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = videoSrc;
-            video.addEventListener('loadedmetadata', function() {
-                video.play();
-            });
-        } else {
-            alert('Browser kamu tidak mendukung HLS. Coba update atau ganti browser.');
-        }
+        // Event untuk debug di console saja, tanpa alert
+        player.on('error', function() {
+            console.log('Error:', player.error());
+        });
+        
+        player.on('loadedmetadata', function() {
+            player.play();
+        });
     </script>
-    
-    <p>Jika ada error, console browser (F12) bisa kasih clue, seperti "CORS error" kalau server blokir akses cross-origin.</p>
 </body>
 </html>
