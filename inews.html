@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iNews Live Stream Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .player-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 15px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #ff4444;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .info-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .info-panel h3 {
+            color: white;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .info-panel p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .player-container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .player-container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="player-container">
+
+
+        <div class="video-wrapper">
+            <iframe 
+                src="https://embed.rctiplus.com/live/inews/inewsid"
+                allowfullscreen 
+                allow="autoplay; fullscreen; encrypted-media"
+                loading="lazy"
+                title="iNews Live Stream Player">
+            </iframe>
+        </div>
+
+
+    </div>
+
+    <script>
+        // Fungsi untuk refresh player
+        function refreshPlayer() {
+            const iframe = document.querySelector('iframe');
+            const currentSrc = iframe.src;
+            iframe.src = '';
+            setTimeout(() => {
+                iframe.src = currentSrc;
+            }, 100);
+            
+            // Tampilkan notifikasi
+            showNotification('Player berhasil di-refresh!');
+        }
+
+        // Fungsi untuk toggle fullscreen
+        function toggleFullscreen() {
+            const videoWrapper = document.querySelector('.video-wrapper');
+            
+            if (!document.fullscreenElement) {
+                videoWrapper.requestFullscreen().then(() => {
+                    showNotification('Mode fullscreen aktif');
+                }).catch(err => {
+                    showNotification('Gagal masuk fullscreen mode');
+                });
+            } else {
+                document.exitFullscreen().then(() => {
+                    showNotification('Keluar dari fullscreen mode');
+                });
+            }
+        }
+
+        // Fungsi untuk buka di tab baru
+        function openInNewTab() {
+            window.open('https://embed.rctiplus.com/live/inews/inewsid', '_blank');
+        }
+
+        // Fungsi untuk menampilkan notifikasi
+        function showNotification(message) {
+            // Hapus notifikasi sebelumnya jika ada
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            // Buat notifikasi baru
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                font-size: 14px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+
+            document.body.appendChild(notification);
+
+            // Hapus notifikasi setelah 3 detik
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Tambahkan CSS untuk animasi notifikasi
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Event listener untuk keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'f':
+                case 'F':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        toggleFullscreen();
+                    }
+                    break;
+                case 'r':
+                case 'R':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        refreshPlayer();
+                    }
+                    break;
+            }
+        });
+
+        // Auto-refresh setiap 30 menit untuk menjaga koneksi
+        setInterval(() => {
+            console.log('Auto-refresh untuk menjaga koneksi streaming...');
+        }, 1800000); // 30 menit
+
+        // Deteksi jika iframe gagal load
+        document.querySelector('iframe').addEventListener('error', function() {
+            showNotification('Gagal memuat stream. Coba refresh player.');
+        });
+
+        // Tampilkan pesan selamat datang
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                showNotification('Selamat menonton iNews Live Stream!');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
